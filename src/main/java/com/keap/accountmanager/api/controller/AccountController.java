@@ -6,9 +6,6 @@ import com.keap.accountmanager.api.dto.AccountDto;
 import com.keap.accountmanager.api.dto.trasnformer.AccountTransformer;
 import com.keap.accountmanager.data.modal.Account;
 import com.keap.accountmanager.service.AccountService;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -18,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -33,8 +31,9 @@ public class AccountController {
     }
 
     @PostMapping("/account")
-    public ResponseEntity<AccountDto> createAccount(@RequestBody CreateAccountCommand createAccountCommand) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(AccountTransformer.toAccountDto(accountService.createAccount(createAccountCommand)));
+    @ResponseStatus(HttpStatus.CREATED)
+    public AccountDto createAccount(@RequestBody CreateAccountCommand createAccountCommand) {
+        return AccountTransformer.toAccountDto(accountService.createAccount(createAccountCommand));
     }
 
     @GetMapping("/account/{id}")
@@ -78,8 +77,8 @@ public class AccountController {
     }
 
     @DeleteMapping("/account/{id}")
-    public ResponseEntity<Void> deleteAccount(@PathVariable String id) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteAccount(@PathVariable String id) {
         accountService.deleteAccount(id);
-        return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 }
